@@ -5,14 +5,11 @@ const externalApiService_1 = require("../services/externalApiService");
 // Controller to fetch data from the external API
 const getChatResponse = async (req, res) => {
     try {
-        //TODO - tu je problem lebo to neprechadza spravne do req.body
-        const { message } = req.body; // Extract messages from frontend request
+        const { message } = req.body; // Extract message from frontend request
         if (!message) {
             return res.status(400).json({ error: 'Invalid request format' });
         }
-        console.log(req, 'requestpico', res, 'responsepico');
-        const aiResponse = await (0, externalApiService_1.fetchChatCompletion)(message);
-        console.log(aiResponse, 'airesponse');
+        const aiResponse = await (0, externalApiService_1.fetchChatCompletion)(message); //returns openAI api response
         res.status(200).json(aiResponse);
     }
     catch (error) {
