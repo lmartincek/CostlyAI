@@ -58,8 +58,6 @@ export const fetchChatCompletion = async (message: string): Promise<OpenAIRespon
             {
                 model: 'gpt-4o-mini',
                 messages: [{ role: 'user', content: message }],
-                // TODO - add stream later on
-                // stream: true,
             },
             {
                 headers: {

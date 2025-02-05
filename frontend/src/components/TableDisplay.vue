@@ -18,7 +18,7 @@ const props = defineProps(['data', 'category'])
             <tr v-for="(value, key) in data" :key="key">
                 <td>{{ value.name }}</td>
 <!--                TODO - currency-->
-                <td>{{ value.price.toFixed(2) }} $</td>
+                <td>{{ Number(value.price).toFixed(2) }} $</td>
             </tr>
             </tbody>
         </table>

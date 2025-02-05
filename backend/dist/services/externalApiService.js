@@ -57,8 +57,6 @@ const fetchChatCompletion = async (message) => {
         const response = await axios_1.default.post(process.env.EXTERNAL_API_URL, {
             model: 'gpt-4o-mini',
             messages: [{ role: 'user', content: message }],
-            // TODO - add stream later on
-            // stream: true,
         }, {
             headers: {
                 'Content-Type': 'application/json',

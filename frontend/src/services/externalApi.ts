@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create an Axios instance for making API requests
 const apiClient = axios.create({
-    baseURL: 'http://localhost:3000/api',  // URL of your backend API
+    baseURL: 'http://localhost:3000/api',
     headers: {
         'Content-Type': 'application/json',
     },
@@ -16,6 +16,40 @@ export const sendChatMessage = async (message: string) => {
         return response.data;  // Return the data received from the backend
     } catch (error) {
         console.error('Error fetching data from API:', error);
+        throw error;
+    }
+};
+
+//todo zjednotit data
+export const getProducts = async () => {
+    try {
+        const response = await apiClient.get('/products' );
+        console.log(response, 'products from DB')
+        return response.data;  // Return the data received from the backend
+    } catch (error) {
+        console.error('Error fetching products from DB:', error);
+        throw error;
+    }
+};
+
+export const getCountries = async () => {
+    try {
+        const response = await apiClient.get('/countries' );
+        console.log(response, 'countries from DB')
+        return response.data;  // Return the data received from the backend
+    } catch (error) {
+        console.error('Error fetching countries from DB:', error);
+        throw error;
+    }
+};
+
+export const getCities = async (countryId: number) => {
+    try {
+        const response = await apiClient.get(`/countries/${countryId}/cities` );
+        console.log(response, 'cities from DB')
+        return response.data;  // Return the data received from the backend
+    } catch (error) {
+        console.error('Error fetching cities from DB:', error);
         throw error;
     }
 };

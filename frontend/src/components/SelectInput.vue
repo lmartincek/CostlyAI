@@ -15,12 +15,13 @@
             >
                 {{ defaultOptionLabel }}
             </option>
+<!--            TODO - rewrite to more abstract -->
             <option
                 v-for="option in options"
-                :key="option.value"
-                :value="option.value"
+                :key="option.code"
+                :value="option.name"
             >
-                {{ option.label }}
+                {{ option.name }}
             </option>
         </select>
     </div>
@@ -36,7 +37,7 @@ const props = defineProps({
         default: 'Select an option',
     },
     options: {
-        type: Array as () => Array<{ label: string, value: any }>,
+        type: Array as () => Array<{ id: number, name: string, code: string }>,
         required: true,
     },
     defaultOptionLabel: {
