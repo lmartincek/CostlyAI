@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="select-input">
         <label :for="id" class="select-label">{{ label }}</label>
         <select
             :id="id"
@@ -70,6 +70,7 @@ watch(selectedValue, (newValue) => {
 
 <style scoped>
 select {
+    margin: 0 10px;
     padding: 10px;
     font-size: 16px;
     cursor: pointer;
