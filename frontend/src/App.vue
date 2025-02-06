@@ -8,23 +8,25 @@ import {computed, onMounted, ref, watch} from "vue";
 import {ICountry, useGeneralStore} from "./stores/generalStore.ts";
 
 const prompt = computed(() => `create JSON form of 20 commonly bought groceries,
- pint of beer in a bar, cocktail, gym month membership, one time entry in a gym,
- airbnb prices per night and one night bed in a shared dormitory in ${selectedCountry.value}, ${selectedCity.value || ''}.
- JSON form should be {"GROCERIES": [{"name (weight or quantity info)", "string_id", "price"}], "OTHERS": [{"name", "string_id", "price"}]}`)
+         pint of beer in a bar, cocktail, gym month membership, one time entry in a gym,
+         airbnb prices per night and one night bed in a shared dormitory in ${selectedCountry.value}, ${selectedCity.value || ''}.
+         JSON form should be {"GROCERIES": [{"name (weight or quantity info)", "string_id", "price"}], "OTHERS": [{"name", "string_id", "price"}]}`)
 
 const productsStore = useProductsStore();
 // const { products, error, loading, loadProducts } = useProductsStore(); LOSE REACTIVITY
 
 const generalStore = useGeneralStore();
 
-
 const selectedCountry = ref<string | number | null>(null);
 const selectedCity = ref<string | number | null>(null);
 
+const selectedCountryObj = computed<ICountry>(() => {
+    return generalStore.countries.find(country => country.name === selectedCountry.value)
+})
+
 onMounted(async () => await generalStore.loadCountries())
 watch( () => selectedCountry.value, async () => {
-    const country: ICountry = generalStore.countries.find(country => country.name === selectedCountry.value)
-    if (country?.id) await generalStore.loadCities(country.id)
+    if (selectedCountryObj.value?.id) await generalStore.loadCities(selectedCountryObj.value.id)
 })
 </script>
 
@@ -49,10 +51,10 @@ watch( () => selectedCountry.value, async () => {
             </div>
             <div class="wrapper__button">
                 <ButtonBasic :disabled="!selectedCountry"
-                             @click="productsStore.loadProducts(prompt)">Search</ButtonBasic>
+                             @click="productsStore.loadProducts(selectedCountryObj.id, prompt)">Search</ButtonBasic>
             </div>
-            <ButtonBasic :disabled="!selectedCountry"
-                         @click="productsStore.loadProducts">Data z DB</ButtonBasic>
+<!--            <ButtonBasic :disabled="!selectedCountry"-->
+<!--                         @click="productsStore.loadProducts(selectedCountryObj.id)">Data z DB</ButtonBasic>-->
         </div>
 
         <div v-if="productsStore.loading">Loading...</div>

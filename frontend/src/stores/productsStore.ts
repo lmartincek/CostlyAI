@@ -7,14 +7,15 @@ export const useProductsStore = defineStore('productsStore', () => {
     const error = ref<string | null>(null);
     const loading = ref<boolean>(false);
 
-    const loadProducts = async (prompt: string) => {
+    const loadProducts = async (countryId: number, prompt: string)  => {
         loading.value = true;
         try {
-            if (prompt) {
-                products.value = await sendChatMessage(prompt);
-            } else {
-                products.value = await getProducts();
-            }
+            products.value = await getProducts(countryId, prompt);
+
+            // console.log(products.value)
+            // if (!products.value) {
+            //     products.value = await sendChatMessage(countryId, prompt);
+            // }
         } catch (err) {
             error.value = 'Failed to fetch products';
         } finally {

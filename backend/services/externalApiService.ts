@@ -1,5 +1,6 @@
 import axios from 'axios';
 import {OpenAIResponse} from "../types/openai";
+import {saveProducts} from "../controllers/myApiController";
 
 //TODO - move to utils
 // const parseResponse = (responseContent: string) => {
@@ -78,7 +79,7 @@ export const fetchChatCompletion = async (message: string): Promise<OpenAIRespon
             throw new Error("No valid JSON found in response.");
         }
 
-        return JSON.parse(jsonMatch[1]); // Return parsed JSON to the frontend
+        return JSON.parse(jsonMatch[1]); // Return parsed JSON to the controller
 
         // return response.data; // Return data to the controller
     } catch (error) {
