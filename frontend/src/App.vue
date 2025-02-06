@@ -5,7 +5,7 @@ import TableDisplay from "./components/TableDisplay.vue";
 
 import { useProductsStore } from './stores/productsStore.ts';
 import {computed, onMounted, ref, watch} from "vue";
-import {ICountry, useGeneralStore} from "./stores/generalStore.ts";
+import {ICity, ICountry, useGeneralStore} from "./stores/generalStore.ts";
 
 const prompt = computed(() => `create JSON form of 20 commonly bought groceries,
          pint of beer in a bar, cocktail, gym month membership, one time entry in a gym,
@@ -20,13 +20,26 @@ const generalStore = useGeneralStore();
 const selectedCountry = ref<string | number | null>(null);
 const selectedCity = ref<string | number | null>(null);
 
-const selectedCountryObj = computed<ICountry>(() => {
-    return generalStore.countries.find(country => country.name === selectedCountry.value)
+const selectedCountryObj = computed<ICountry | null>(() => {
+    return generalStore.countries.find(country => country.name === selectedCountry.value) || null
+})
+const selectedCityObj = computed<ICity | null>(() => {
+    return generalStore.cities.find(country => country.name === selectedCity.value) || null
+})
+
+const args = computed(() => {
+    return {
+        countryId: selectedCountryObj.value?.id,
+        cityId: selectedCityObj.value?.id,
+        prompt: prompt.value
+    }
 })
 
 onMounted(async () => await generalStore.loadCountries())
 watch( () => selectedCountry.value, async () => {
-    if (selectedCountryObj.value?.id) await generalStore.loadCities(selectedCountryObj.value.id)
+    if ("id" in selectedCountryObj.value) {
+        await generalStore.loadCities(selectedCountryObj.value.id)
+    }
 })
 </script>
 
@@ -51,18 +64,18 @@ watch( () => selectedCountry.value, async () => {
             </div>
             <div class="wrapper__button">
                 <ButtonBasic :disabled="!selectedCountry"
-                             @click="productsStore.loadProducts(selectedCountryObj.id, prompt)">Search</ButtonBasic>
+                             @click="productsStore.loadProducts(args)">Search</ButtonBasic>
             </div>
-<!--            <ButtonBasic :disabled="!selectedCountry"-->
-<!--                         @click="productsStore.loadProducts(selectedCountryObj.id)">Data z DB</ButtonBasic>-->
         </div>
 
         <div v-if="productsStore.loading">Loading...</div>
         <div v-if="productsStore.error" class="error">{{ productsStore.error }}</div>
         <template v-if="productsStore.products">
-            <TableDisplay v-for="(product, category) in productsStore.products"
-                          :data="product"  :category="category"
-                          :key="'table ' + category"/>
+            <div class="wrapper-table">
+                <TableDisplay v-for="(product, category) in productsStore.products"
+                              :data="product"  :category="category"
+                              :key="'table ' + category"/>
+            </div>
         </template>
     </div>
 </template>
@@ -70,6 +83,13 @@ watch( () => selectedCountry.value, async () => {
 <style scoped lang="scss">
 .error {
     color: red;
+}
+
+.wrapper-table {
+    margin: 2rem 0;
+    display: flex;
+    justify-content: space-between;
+    max-width: 600px;
 }
 
 .wrapper {

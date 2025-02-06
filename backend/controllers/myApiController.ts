@@ -1,6 +1,5 @@
 import {Request, Response} from "express";
 import pool from "../db/db";
-import {type} from "os";
 
 const groupByFn = (products: {id: number, category: string, name: string}[]) => {
     return products.reduce((x, y) => {
@@ -12,8 +11,8 @@ const groupByFn = (products: {id: number, category: string, name: string}[]) => 
 
 //todo - add params countryId and optional cityId
 export const getProducts = async (req: Request, res: Response) => {
-    const { countryId } = req.query
-
+    const { countryId, cityId } = req.query
+    console.log(cityId, req.query, 'hmm?')
     try {
         // Check Redis Cache First
         // const cacheData = await redisClient.get("products");
@@ -24,10 +23,11 @@ export const getProducts = async (req: Request, res: Response) => {
             SELECT *
             FROM products
             WHERE country_id = $1
+            AND ${cityId ? `city_id = $2` : `$2::INTEGER IS NULL`};
         `;
 
-        const { rows } = await pool.query(query, [countryId]);
-        if (!rows.length) res.status(404).json({message:'products not found for this country'})
+        const { rows } = await pool.query(query, [countryId, cityId]);
+        if (!rows.length) res.status(404).json({message:'products not found for this place'})
 
         // Store result in Redis for caching (optional)
         // await redisClient.setEx("products", 3600, JSON.stringify(result.rows));

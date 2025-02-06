@@ -9,12 +9,12 @@ const apiClient = axios.create({
 });
 
 // Function to fetch data from the backend -> This is processed by 1.ApiRoutes, 2.Controller which uses 3.Service
-export const sendChatMessage = async (countryId: number, message: string) => {
+export const sendChatMessage = async (countryId: number, cityId: number | undefined, message: string) => {
     try {
         const response = await apiClient.post('/chat', { message } );
         console.log(response, 'response z chatgpt')
         if (response.data) {
-            await apiClient.post('/products', { countryId, products: response.data })
+            await apiClient.post('/products', { countryId, cityId, products: response.data })
         }
 
         return response.data;  // Return the data received from the backend
@@ -24,14 +24,15 @@ export const sendChatMessage = async (countryId: number, message: string) => {
     }
 };
 
-export const getProducts = async (countryId: number, message: string) => {
+export const getProducts = async (countryId: number, cityId: number | undefined, message: string) => {
+    const url = `/products?countryId=${countryId}${cityId ? `&cityId=${cityId}` : ''}`
     try {
-        const response = await apiClient.get(`/products?countryId=${countryId}`);
+        const response = await apiClient.get(url);
         return response.data;  // Return the data received from the backend
     } catch (error) {
         // @ts-ignore
         if (error.response.status === 404) {
-            return await sendChatMessage(countryId, message)
+            return await sendChatMessage(countryId, cityId, message)
         }
 
         console.error('Error fetching products from DB:', error);
