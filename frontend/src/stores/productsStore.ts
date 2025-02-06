@@ -8,7 +8,6 @@ export const useProductsStore = defineStore('productsStore', () => {
     const loading = ref<boolean>(false);
 
     const loadProducts = async ({countryId, cityId, prompt}: {countryId: number, cityId: number | undefined, prompt: string})  => {
-        console.log(countryId, cityId, prompt)
         loading.value = true;
         try {
             products.value = await getProducts(countryId, cityId, prompt);

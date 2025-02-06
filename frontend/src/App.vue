@@ -48,8 +48,8 @@ watch( () => selectedCountry.value, async () => {
         <h1>Costly</h1>
         <p>Search most commonly bought groceries and its prices in your location or location you want to visit</p>
 
-        <div class="wrapper">
-            <div class="wrapper__inputs">
+        <div class="wrapper-control">
+            <div class="wrapper-control__inputs">
                 <SelectInput
                         label="Select a Country"
                         :options="generalStore.countries"
@@ -62,21 +62,26 @@ watch( () => selectedCountry.value, async () => {
                         :disabled="!selectedCountry"
                 />
             </div>
-            <div class="wrapper__button">
-                <ButtonBasic :disabled="!selectedCountry"
+            <div class="wrapper-control__button">
+                <ButtonBasic :disabled="!selectedCountry || productsStore.loading"
                              @click="productsStore.loadProducts(args)">Search</ButtonBasic>
             </div>
         </div>
 
-        <div v-if="productsStore.loading">Loading...</div>
-        <div v-if="productsStore.error" class="error">{{ productsStore.error }}</div>
-        <template v-if="productsStore.products">
-            <div class="wrapper-table">
-                <TableDisplay v-for="(product, category) in productsStore.products"
-                              :data="product"  :category="category"
-                              :key="'table ' + category"/>
+        <div class="wrapper-data">
+            <div v-if="productsStore.loading" class="loader">
+                Data is about to be shown, <b>please wait...</b>
             </div>
-        </template>
+            <div v-if="productsStore.error" class="error">{{ productsStore.error }}</div>
+            <template v-if="productsStore.products">
+                    <p>Current avg prices in <b>{{selectedCity ? `${selectedCity}, ${selectedCountry}` : selectedCountry}}</b>.</p>
+                    <div class="wrapper-data__table">
+                        <TableDisplay v-for="(product, category) in productsStore.products"
+                                      :data="product"  :category="category"
+                                      :key="'table ' + category"/>
+                    </div>
+            </template>
+        </div>
     </div>
 </template>
 
@@ -85,17 +90,25 @@ watch( () => selectedCountry.value, async () => {
     color: red;
 }
 
-.wrapper-table {
-    margin: 2rem 0;
-    display: flex;
-    justify-content: space-between;
-    max-width: 600px;
+.loader {
+    margin-top: 2rem;
 }
 
-.wrapper {
+.wrapper-data {
+    border-top: 1px solid black;
+    padding-top: 1rem;
+
+    &__table {
+        margin: 1rem 0 2rem;
+        display: flex;
+        justify-content: space-between;
+    }
+}
+
+.wrapper-control {
     display: flex;
     justify-content: space-between;
-    margin-top: 50px;
+    margin: 3rem 0 1rem;
 
     &__inputs {
         display: flex;
