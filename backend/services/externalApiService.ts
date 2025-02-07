@@ -1,6 +1,5 @@
 import axios from 'axios';
 import {OpenAIResponse} from "../types/openai";
-import {saveProducts} from "../controllers/myApiController";
 
 //TODO - move to utils
 // const parseResponse = (responseContent: string) => {
