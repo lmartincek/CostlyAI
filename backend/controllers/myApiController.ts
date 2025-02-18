@@ -1,18 +1,11 @@
 import {Request, Response} from "express";
 import pool from "../db/db";
+import {groupByFn} from "../utils/parseHelpers";
+import {throwError} from "../utils/responseErrorHandler";
 
-const groupByFn = (products: {id: number, category: string, name: string}[]) => {
-    return products.reduce((x, y) => {
-        // @ts-ignore
-        (x[y.category] = (x[y.category] || [])).push(y);
-        return x;
-    }, {})
-}
-
-//todo - add params countryId and optional cityId
 export const getProducts = async (req: Request, res: Response) => {
     const { countryId, cityId } = req.query
-    console.log(cityId, req.query, 'hmm?')
+
     try {
         // Check Redis Cache First
         // const cacheData = await redisClient.get("products");

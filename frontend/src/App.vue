@@ -10,7 +10,7 @@ import {ICity, ICountry, useGeneralStore} from "./stores/generalStore.ts";
 const prompt = computed(() => `create JSON form of 20 commonly bought groceries,
          pint of beer in a bar, cocktail, gym month membership, one time entry in a gym,
          airbnb prices per night and one night bed in a shared dormitory in ${selectedCountry.value}, ${selectedCity.value || ''}.
-         JSON form should be {"GROCERIES": [{"name (weight or quantity info)", "string_id", "price"}], "OTHERS": [{"name", "string_id", "price"}]}`)
+         JSON form should be {"GROCERIES": [{"name (weight or quantity info)", "price"}], "OTHERS": [{"name", "price"}]}`)
 
 const productsStore = useProductsStore();
 // const { products, error, loading, loadProducts } = useProductsStore(); LOSE REACTIVITY
