@@ -7,7 +7,9 @@ export const useProductsStore = defineStore('productsStore', () => {
     const error = ref<string | null>(null);
     const loading = ref<boolean>(false);
 
-    const loadProducts = async ({countryId, cityId, prompt}: {countryId: number, cityId: number | undefined, prompt: string})  => {
+    const loadProducts = async ({countryId, cityId, prompt}: {countryId: number | undefined, cityId: number | undefined, prompt: string})  => {
+        if (!countryId) return;
+
         loading.value = true;
         try {
             products.value = await getProducts(countryId, cityId, prompt);

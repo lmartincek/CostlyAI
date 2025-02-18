@@ -27,7 +27,7 @@ const selectedCityObj = computed<ICity | null>(() => {
     return generalStore.cities.find(country => country.name === selectedCity.value) || null
 })
 
-const args = computed(() => {
+const args = computed<{countryId: number | undefined, cityId: number | undefined, prompt: string}>(() => {
     return {
         countryId: selectedCountryObj.value?.id,
         cityId: selectedCityObj.value?.id,
@@ -41,6 +41,34 @@ watch( () => selectedCountry.value, async () => {
         await generalStore.loadCities(selectedCountryObj.value.id)
     }
 })
+
+const textInput = ref<string>('')
+const streamText = ref<string>('')
+const sendChatStreamMessage = async (message: string) => {
+    const response = await fetch('http://localhost:3000/api/chatStream', {
+        method: 'POST',
+        body: JSON.stringify({ message }),
+        headers: { 'Content-Type': 'application/json'}
+    })
+
+    if (!response.body) {
+        streamText.value = 'Error: not possible to get the streamed response'
+        console.error('No response body');
+        return;
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+
+    while (true) {
+        console.log(await reader.read())
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        streamText.value += decoder.decode(value, { stream: true });
+        console.log(`Received chunk: ${streamText.value}`);
+    }
+};
 </script>
 
 <template>
@@ -65,6 +93,19 @@ watch( () => selectedCountry.value, async () => {
             <div class="wrapper-control__button">
                 <ButtonBasic :disabled="!selectedCountry || productsStore.loading"
                              @click="productsStore.loadProducts(args)">Search</ButtonBasic>
+            </div>
+        </div>
+
+        <div class="wrapper-stream">
+            <div class="wrapper-stream__controls">
+                <input placeholder="Ask a question to get a streamed response"
+                       v-model="textInput"/>
+                <ButtonBasic :disabled="!textInput"
+                             @click="sendChatStreamMessage(textInput)">Ask</ButtonBasic>
+            </div>
+
+            <div class="wrapper-stream__output">
+                <p>{{streamText ? streamText : 'Ask me something and I will respond with stream'}}</p>
             </div>
         </div>
 
@@ -129,6 +170,34 @@ watch( () => selectedCountry.value, async () => {
         :deep(button) {
             width: 160px;
         }
+    }
+}
+
+.wrapper-stream {
+    width: 100%;
+    background: black;
+    border-radius: 1rem;
+    margin: 3rem 0 1rem;
+
+    &__controls {
+        display: flex;
+        position: relative;
+        top: 1rem;
+        left: 1rem;
+
+        input {
+            border-radius: .5rem;
+            padding: 0.5rem 1rem;
+            margin-right: 1rem;
+            background: #ffffff;
+            color: #000000;
+        }
+    }
+
+    &__output {
+        text-align: left;
+        display: flex;
+        padding: 0.75rem 1.25rem 1rem;
     }
 }
 </style>

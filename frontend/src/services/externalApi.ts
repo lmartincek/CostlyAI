@@ -9,10 +9,10 @@ const apiClient = axios.create({
 });
 
 // Function to fetch data from the backend -> This is processed by 1.ApiRoutes, 2.Controller which uses 3.Service
-export const sendChatMessage = async (countryId: number, cityId: number | undefined, message: string) => {
+export const sendChatMessage = async (countryId: number | undefined, cityId: number | undefined, message: string) => {
     try {
         const response = await apiClient.post('/chat', { message } );
-        console.log(response, 'response z chatgpt')
+
         if (response.data) {
             await apiClient.post('/products', { countryId, cityId, products: response.data })
         }
