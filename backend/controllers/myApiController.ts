@@ -20,16 +20,18 @@ export const getProducts = async (req: Request, res: Response) => {
         `;
 
         const { rows } = await pool.query(query, [countryId, cityId]);
-        if (!rows.length) res.status(404).json({message:'products not found for this place'})
+        if (!rows.length) {
+            res.status(404).json(throwError('Products not found for this place'))
+            return
+        }
 
         // Store result in Redis for caching (optional)
         // await redisClient.setEx("products", 3600, JSON.stringify(result.rows));
 
-        // TODO - toto cele prerobit, groupBy etc
-        res.json(groupByFn(rows));
+        // TODO - rewrite, groupBy etc
+        res.status(200).json(groupByFn(rows));
     } catch (error) {
-        console.error("Error retrieving products:", error);
-        res.status(500).json({ message: "Error retrieving products" });
+        res.status(500).json(throwError(`Error retrieving products from DB  ${error}`));
     }
 };
 
@@ -42,7 +44,6 @@ export const getProducts = async (req: Request, res: Response) => {
 export const saveProducts = async (req: Request, res: Response) => {
     try {
         const { countryId, cityId, products } = req.body
-        console.log(req.body, products, 'save products to DB')
 
         // Get the categories (keys of the object)
         const categories = Object.keys(products);
@@ -50,12 +51,12 @@ export const saveProducts = async (req: Request, res: Response) => {
         // Use `flatMap` to transform and combine the products
         const concatProducts = categories.flatMap(category =>
         // @ts-ignore
-        //todo add product type
             products[category].map(product => ({
                 ...product,
                 category: category // Add the category to each product
             }))
         );
+
 
         const query = `
             INSERT INTO products (name, price, category, country_id, city_id)
@@ -70,8 +71,7 @@ export const saveProducts = async (req: Request, res: Response) => {
 
         res.json({ message: "Products saved successfully!" });
     } catch (error) {
-        console.error("Error saving products:", error);
-        res.status(500).json({ message: "Error saving products" });
+        res.status(500).json(throwError(`Error saving products: ${error}`));
     }
 };
 
@@ -86,8 +86,7 @@ export const getCountries = async (req: Request, res: Response) => {
         const { rows } = await pool.query(query)
         res.json(rows)
     } catch (error) {
-        console.error("Error retrieving countries:", error);
-        res.status(500).json({ message: "Error retrieving countries" });
+        res.status(500).json(throwError(`Error retrieving countries: ${error}`));
     }
 }
 
@@ -104,7 +103,6 @@ export const getCities = async (req: Request, res: Response) => {
         const { rows } = await pool.query(query, [countryId])
         res.json(rows)
     } catch (error) {
-        console.error("Error retrieving cities:", error);
-        res.status(500).json({ message: "Error retrieving cities" });
+        res.status(500).json(throwError(`Error retrieving cities: ${error}`));
     }
 }
