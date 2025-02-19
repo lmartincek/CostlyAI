@@ -28,10 +28,10 @@ const selectedCityObj = computed<ICity | null>(() => {
     return generalStore.cities.find(country => country.name === selectedCity.value) || null
 })
 
-const args = computed<{countryId: number | undefined, cityId: number | undefined, prompt: string}>(() => {
+const args = computed<{country: ICountry | null, city: ICity | null, prompt: string}>(() => {
     return {
-        countryId: selectedCountryObj.value?.id,
-        cityId: selectedCityObj.value?.id,
+        country: selectedCountryObj.value,
+        city: selectedCityObj.value,
         prompt: prompt.value
     }
 })
@@ -122,7 +122,13 @@ const sendChatStreamMessage = async (message: string) => {
             </div>
             <div v-if="productsStore.error" class="error">{{ productsStore.error }}</div>
             <template v-if="productsStore.products">
-                    <p>Current avg prices in <b>{{selectedCity ? `${selectedCity}, ${selectedCountry}` : selectedCountry}}</b>.</p>
+                    <p v-if="productsStore.lastCountry">
+                        Current avg prices in
+                        <b>{{productsStore.lastCity
+                        ? `${productsStore.lastCity}, ${productsStore.lastCountry}`
+                        : productsStore.lastCountry}}
+                        </b>.
+                    </p>
                     <div class="wrapper-data__table">
                         <TableDisplay v-for="(product, category) in productsStore.products"
                                       :data="product"  :category="category"
@@ -188,9 +194,7 @@ const sendChatStreamMessage = async (message: string) => {
 
     &__controls {
         display: flex;
-        position: relative;
-        top: 1rem;
-        left: 1rem;
+        padding: 1rem 1rem 0 1rem;
 
         input {
             border-radius: .5rem;
@@ -198,13 +202,14 @@ const sendChatStreamMessage = async (message: string) => {
             margin-right: 1rem;
             background: #ffffff;
             color: #000000;
+            width: 100%;
         }
     }
 
     &__output {
         text-align: left;
         display: flex;
-        padding: 0.75rem 1.25rem 1rem;
+        padding: 0 1.25rem 0;
     }
 }
 </style>
