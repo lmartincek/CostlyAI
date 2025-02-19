@@ -1,5 +1,5 @@
 import axios, {AxiosResponse} from 'axios';
-import {OpenAIResponse} from "../types/openAi";
+import {OpenAIResponse, OpenAIStreamResponse} from "../types/openAi";
 import {ProductsParsedAIResponse} from "../types/products";
 import {extractJSONfromResponse} from "../utils/parseHelpers";
 import {FailedResponse} from "../types/responseStatus";
@@ -42,6 +42,7 @@ export const fetchChatStreamCompletion = async (message: string, res: Response):
                 model: 'gpt-4o-mini',
                 messages: [{ role: 'user', content: message }],
                 stream: true,
+                store: true,
             },
             {
                 headers: {
@@ -62,7 +63,7 @@ export const fetchChatStreamCompletion = async (message: string, res: Response):
         });
 
         stream.on('error', (error: Error) => {
-            res.write(`data: ${JSON.stringify(throwError('Stream error occurred'))}`);
+            res.write(JSON.stringify(throwError('Stream error occurred')));
             res.end();
         });
     } catch (error) {

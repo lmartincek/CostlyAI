@@ -6,6 +6,7 @@ import TableDisplay from "./components/TableDisplay.vue";
 import { useProductsStore } from './stores/productsStore.ts';
 import {computed, onMounted, ref, watch} from "vue";
 import {ICity, ICountry, useGeneralStore} from "./stores/generalStore.ts";
+import {fixAndParseJSON} from "./utils/objectHelpers.ts";
 
 const prompt = computed(() => `create JSON form of 20 commonly bought groceries,
          pint of beer in a bar, cocktail, gym month membership, one time entry in a gym,
@@ -44,7 +45,13 @@ watch( () => selectedCountry.value, async () => {
 
 const textInput = ref<string>('')
 const streamText = ref<string>('')
+
+//TODO rewrite later
+//@ts-ignore
+const parsedStreamText = computed<string>(() => streamText.value || "Ask me something and I will respond with stream")
 const sendChatStreamMessage = async (message: string) => {
+    if (streamText.value) streamText.value = ""
+
     const response = await fetch('http://localhost:3000/api/chatStream', {
         method: 'POST',
         body: JSON.stringify({ message }),
@@ -61,11 +68,11 @@ const sendChatStreamMessage = async (message: string) => {
     const decoder = new TextDecoder();
 
     while (true) {
-        console.log(await reader.read())
         const { done, value } = await reader.read();
         if (done) break;
 
-        streamText.value += decoder.decode(value, { stream: true });
+        //@ts-ignore
+        streamText.value += fixAndParseJSON(decoder.decode(value, { stream: true }))?.data?.choices?.[0]?.delta?.content || "";
         console.log(`Received chunk: ${streamText.value}`);
     }
 };
@@ -105,7 +112,7 @@ const sendChatStreamMessage = async (message: string) => {
             </div>
 
             <div class="wrapper-stream__output">
-                <p>{{streamText ? streamText : 'Ask me something and I will respond with stream'}}</p>
+                <p>{{parsedStreamText}}</p>
             </div>
         </div>
 

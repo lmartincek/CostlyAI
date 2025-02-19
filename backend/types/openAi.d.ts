@@ -19,3 +19,18 @@ export interface OpenAIResponse {
         total_tokens: number;
     };
 }
+
+export interface OpenAIStreamResponse {
+    //TODO make it better
+    choices: {
+        delta: {
+            content: string
+        }
+    }[],
+    created: number,
+    id: string,
+    model: string,
+    object: string,
+    service_tier: string,
+    system_fingerprint: string,
+}
