@@ -106,6 +106,7 @@ const sendChatStreamMessage = async (message: string) => {
         <div class="wrapper-stream">
             <div class="wrapper-stream__controls">
                 <input placeholder="Ask a question to get a streamed response"
+                       @keydown.enter="sendChatStreamMessage(textInput)"
                        v-model="textInput"/>
                 <ButtonBasic :disabled="!textInput"
                              @click="sendChatStreamMessage(textInput)">Ask</ButtonBasic>

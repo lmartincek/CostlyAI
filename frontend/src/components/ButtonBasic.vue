@@ -10,10 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits } from 'vue';
-
-// Define props with default values and types
-const props = defineProps({
+defineProps({
     label: {
         type: String,
         default: 'Click Me',

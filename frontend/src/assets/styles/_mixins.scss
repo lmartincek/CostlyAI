@@ -1,0 +1,12 @@
+// Mixin for fluid typography
+@mixin fluid-font($min-font, $max-font, $min-vw: 320px, $max-vw: 1200px) {
+  font-size: $min-font;
+
+  @media (min-width: $min-vw) {
+    font-size: calc(#{$min-font} + (#{$max-font} - #{$min-font}) * ((100vw - #{$min-vw}) / (#{$max-vw} - #{$min-vw})));
+  }
+
+  @media (min-width: $max-vw) {
+    font-size: $max-font;
+  }
+}
