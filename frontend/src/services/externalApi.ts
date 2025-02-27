@@ -2,7 +2,8 @@ import axios from 'axios';
 
 // Create an Axios instance for making API requests
 const apiClient = axios.create({
-    baseURL: 'http://localhost:3000/api',
+    // TODO - rewrite automatically based on backend env
+    baseURL: 'http://localhost:8080/api',
     headers: {
         'Content-Type': 'application/json',
     },
@@ -13,7 +14,7 @@ export const sendChatMessage = async (countryId: number | undefined, cityId: num
     try {
         const response = await apiClient.post('/chat', { message } );
 
-        if (response.data) {
+        if (response.data && response.status === 200) {
             await apiClient.post('/products', { countryId, cityId, products: response.data })
         }
 

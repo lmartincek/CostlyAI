@@ -6,14 +6,33 @@ import TableDisplay from "./components/TableDisplay.vue";
 import { useProductsStore } from './stores/productsStore.ts';
 import {computed, onMounted, ref, watch} from "vue";
 import {ICity, ICountry, useGeneralStore} from "./stores/generalStore.ts";
-import {fixAndParseJSON} from "./utils/objectHelpers.ts";
+import {fixAndParseJSON, groupProductsByCategory} from "./utils/objectHelpers.ts";
 
-const prompt = computed(() => `create JSON form of 20 commonly bought groceries,
-         pint of beer in a bar, cocktail, gym month membership, one time entry in a gym,
-         airbnb prices per night and one night bed in a shared dormitory in ${selectedCountry.value}, ${selectedCity.value || ''}.
-         JSON form should be {"GROCERIES": [{"name (weight or quantity info)", "price"}], "OTHERS": [{"name", "price"}]}`)
+const prompt = computed(() => `
+create only JSON, no text outside of JSON format, of 24 items in total.
+10 commonly bought groceries with units (pc, kg, L),
+8 commonly used services, meal in restaurant, pint of beer, gym membership
+6 others such as transportation (with km range) or other available data
+in ${selectedCity.value ? selectedCountry.value + ', ' + selectedCity.value : selectedCountry.value}.
+JSON format should be
+[
+    {
+        "name": string in english,
+        "price": number in local currency,
+        "category": "groceries" | "services" | "others",
+    }
+]
+`)
 
 const productsStore = useProductsStore();
+const productsByCategory = computed(() => {
+    if (productsStore.products) return groupProductsByCategory(productsStore.products)
+    return []
+})
+
+function logGroups() {
+    console.log(productsByCategory, 'hmm')
+}
 // const { products, error, loading, loadProducts } = useProductsStore(); LOSE REACTIVITY
 
 const generalStore = useGeneralStore();
@@ -131,11 +150,11 @@ const sendChatStreamMessage = async (message: string) => {
                         </b>.
                     </p>
                     <div class="wrapper-data__table">
-                        <TableDisplay v-for="(product, category) in productsStore.products"
-                                      :data="product"  :category="category"
-                                      :key="'table ' + category"/>
+                        <TableDisplay :data="productsStore.products"/>
                     </div>
             </template>
+
+            <button @click="logGroups">log groups</button>
         </div>
     </div>
 </template>

@@ -4,8 +4,9 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import apiRoutes from './routes/apiRoutes';
 
-// Load environment variables
-dotenv.config();
+//TODO later fix handling env files automatically
+// dotenv.config({path: '.env.local'})
+dotenv.config({path: '.env.production'})
 
 const app = express();
 
@@ -25,7 +26,7 @@ app.use(express.json());
 app.use('/api', apiRoutes);
 
 // Start the server
-const PORT = process.env.API_PORT || 3000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.info(`Server running on http://localhost:${PORT}`);
 });

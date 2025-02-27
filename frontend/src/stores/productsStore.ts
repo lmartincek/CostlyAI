@@ -4,7 +4,7 @@ import { getProducts } from '../services/externalApi.ts';
 import type {ICity, ICountry} from "./generalStore.ts";
 
 export const useProductsStore = defineStore('productsStore', () => {
-    const products = ref<any>(null);
+    const products = ref<Product[] | null>(null);
     const error = ref<string | null>(null);
     const loading = ref<boolean>(false);
 

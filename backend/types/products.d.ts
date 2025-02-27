@@ -1,25 +1,16 @@
-enum ProductType {
-    GROCERIES = "GROCERIES",
-    OTHERS = "OTHERS",
+enum ProductCategory {
+    GROCERIES = "groceries",
+    SERVICES = "services",
+    OTHERS = "others",
 }
-interface ProductParsedAI {
+interface ProductAIResponse {
     name: string,
-    price: string,
+    price: number,
+    category: [ProductCategory.GROCERIES] | [ProductCategory.SERVICES] | [ProductCategory.OTHERS],
 }
 
-interface ProductsParsedAIResponse {
-    [ProductType.GROCERIES]: ProductParsedAI[],
-    [ProductType.OTHERS]: ProductParsedAI[]
-}
-
-interface Product extends ProductParsedAI {
-    id: number,
-    category: [ProductType.OTHERS] | [ProductType.GROCERIES],
+//TODO - missing id
+interface Product extends ProductAIResponse {
     country_id: number,
     city_id: number | null
-}
-
-export interface ProductsResponse {
-    [ProductType.GROCERIES]: Product[],
-    [ProductType.OTHERS]: Product[]
 }
