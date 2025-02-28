@@ -38,7 +38,6 @@ export const fetchCities = async (countryId: number): Promise<City[] | FailedRes
 
 }
 
-//TODO - handle edges where extracting general country products
 export const fetchProducts = async (
     countryId: number,
     cityId: number | null
@@ -51,6 +50,10 @@ export const fetchProducts = async (
 
         if (cityId) {
             query.eq('city_id', cityId);
+        }
+
+        if (cityId === null) {
+            query.is('city_id', null)
         }
 
         const { data, error } = await query;
