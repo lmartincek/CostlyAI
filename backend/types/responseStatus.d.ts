@@ -1,3 +1,4 @@
 export interface FailedResponse {
-    error: string
+    error: string;
+    statusCode?: number;
 }

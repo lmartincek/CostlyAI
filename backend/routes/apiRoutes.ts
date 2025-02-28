@@ -4,14 +4,19 @@ import {getCountries, getProducts, getCities, saveProducts} from "../controllers
 
 const router = Router();
 
+//TODO fix the typing problem
+// @ts-ignore
 router.post('/chat', getChatResponse);
+// @ts-ignore
 router.post('/chatStream', getChatStreamResponse);
 
+// @ts-ignore
 router.get('/products', getProducts);
+// @ts-ignore
 router.get('/countries', getCountries);
+// @ts-ignore
 router.get('/cities', getCities);
 
-//TODO co to ma za problem?
 // @ts-ignore
 router.post('/products', saveProducts);
 export default router;
