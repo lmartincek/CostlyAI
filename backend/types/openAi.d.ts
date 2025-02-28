@@ -21,7 +21,6 @@ export interface OpenAIResponse {
 }
 
 export interface OpenAIStreamResponse {
-    //TODO make it better
     choices: {
         delta: {
             content: string

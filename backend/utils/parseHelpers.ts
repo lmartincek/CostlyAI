@@ -1,22 +1,13 @@
-import {ProductsParsedAIResponse} from "../types/products";
 import {FailedResponse} from "../types/responseStatus";
-import {throwError} from "./responseErrorHandler";
+import {returnError} from "./responseErrorHandler";
 
-export const extractJSONfromResponse = (responseContent: string): ProductsParsedAIResponse | FailedResponse  => {
+export const extractJSONProductsFromResponse = (responseContent: string): ProductAIResponse[] | FailedResponse  => {
     const jsonMatch: RegExpMatchArray | null = responseContent.match(/```json\n([\s\S]+?)\n```/);
-    if (!jsonMatch) return throwError("No valid JSON found in openAI response.");
+    if (!jsonMatch) return returnError("No valid JSON found in openAI response.");
 
     try {
-        return JSON.parse(jsonMatch[1]) as ProductsParsedAIResponse;
+        return JSON.parse(jsonMatch[1]) as ProductAIResponse[];
     } catch (error: unknown) {
-        return throwError(`Error parsing JSON from openAI: ${error}`);
+        return returnError(`Error parsing JSON from openAI: ${error}`);
     }
 };
-
-export const groupByFn = (products: {id: number, category: string, name: string}[]) => {
-    return products.reduce((x, y) => {
-        // @ts-ignore
-        (x[y.category] = (x[y.category] || [])).push(y);
-        return x;
-    }, {})
-}

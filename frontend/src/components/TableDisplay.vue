@@ -1,10 +1,11 @@
 <script setup lang="ts">
-const props = defineProps(['data', 'category'])
+// const props = defineProps(['data'])
+defineProps(['data'])
 </script>
 
 <template>
     <div>
-        <h2>{{category}}</h2>
+<!--        <h2>{{category}}</h2>-->
 
         <table v-if="data" border="1">
             <thead>
@@ -14,10 +15,10 @@ const props = defineProps(['data', 'category'])
             </tr>
             </thead>
             <tbody>
-            <!-- Loop through main key-values -->
+
             <tr v-for="(value, key) in data" :key="key">
                 <td>{{ value.name }}</td>
-<!--                TODO - currency-->
+                <!-- TODO - currency based on country, add currency file-->
                 <td>{{ Number(value.price).toFixed(2) }} $</td>
             </tr>
             </tbody>

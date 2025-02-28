@@ -23,4 +23,5 @@ dist
 *.sw?
 
 #ENV
-.env
+.env.local
+.env.production
