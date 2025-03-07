@@ -11,7 +11,7 @@ const app = express();
 // Enable CORS
 app.use(
     cors({
-        origin: 'http://localhost:5173', //TODO Replace with your frontend URL
+        origin: process.env.FRONTEND_URL || 'http://localhost:5173',
         methods: 'GET,POST',
         allowedHeaders: 'Content-Type,Authorization',
     })
