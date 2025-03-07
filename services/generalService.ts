@@ -3,6 +3,7 @@ import {supabase} from "../utils/supabaseClient";
 import {FailedResponse} from "../types/responseStatus";
 import {City} from "../types/cities";
 import {Country} from "../types/countries";
+import {Product, ProductAIResponse} from "../types/products";
 
 export const fetchCountries = async (): Promise<Country[] | FailedResponse> => {
     try {

@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import {fetchChatCompletion, fetchChatStreamCompletion} from '../services/chatCompletionService';
 import {FailedResponse} from "../types/responseStatus";
 import {returnError} from "../utils/responseErrorHandler";
+import {ProductAIResponse} from "../types/products";
 
 export const getChatResponse = async (req: Request, res: Response) => {
     const { message } = req.body;

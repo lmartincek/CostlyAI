@@ -4,6 +4,7 @@ import {extractJSONProductsFromResponse} from "../utils/parseHelpers";
 import {FailedResponse} from "../types/responseStatus";
 import {returnError} from "../utils/responseErrorHandler";
 import { Response } from "express";
+import {ProductAIResponse} from "../types/products";
 
 export const fetchChatCompletion = async (message: string): Promise<ProductAIResponse[] | FailedResponse> => {
     try {

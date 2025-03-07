@@ -3,13 +3,13 @@ enum ProductCategory {
     SERVICES = "services",
     OTHERS = "others",
 }
-interface ProductAIResponse {
+export interface ProductAIResponse {
     name: string,
     price: number,
     category: [ProductCategory.GROCERIES] | [ProductCategory.SERVICES] | [ProductCategory.OTHERS],
 }
 
-interface Product extends ProductAIResponse {
+export interface Product extends ProductAIResponse {
     country_id: number,
     city_id: number | null
 }

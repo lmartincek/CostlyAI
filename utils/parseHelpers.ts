@@ -1,5 +1,6 @@
 import {FailedResponse} from "../types/responseStatus";
 import {returnError} from "./responseErrorHandler";
+import {ProductAIResponse} from "../types/products";
 
 export const extractJSONProductsFromResponse = (responseContent: string): ProductAIResponse[] | FailedResponse  => {
     const jsonMatch: RegExpMatchArray | null = responseContent.match(/```json\n([\s\S]+?)\n```/);
