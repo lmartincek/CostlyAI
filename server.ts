@@ -8,12 +8,23 @@ dotenv.config({ path: `.env.${process.env.NODE_ENV}`})
 
 const app = express();
 
+const allowedOrigins = [
+    'https://costlyai-webclient.onrender.com',
+    'http://localhost:5173',
+];
+
 // Enable CORS
 app.use(
     cors({
-        origin: process.env.FRONTEND_URL || 'http://localhost:5173',
-        methods: 'GET,POST',
-        allowedHeaders: 'Content-Type,Authorization',
+        origin: (origin, callback) => {
+            if (!origin || allowedOrigins.includes(origin)) {
+                callback(null, true);
+            } else {
+                callback(new Error('Not allowed by CORS'));
+            }
+        },
+        methods: ['GET', 'POST'],
+        credentials: true,
     })
 );
 
