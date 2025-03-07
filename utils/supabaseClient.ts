@@ -6,6 +6,6 @@ import dotenv from "dotenv";
 dotenv.config({path: '.env.production'})
 
 export const supabase = createClient(
-    process.env.DB_URL!,
-    process.env.DB_KEY!
+    process.env.SUPABASE_URL!,
+    process.env.SUPABASE_KEY!
 );

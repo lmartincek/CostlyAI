@@ -7,7 +7,7 @@ This is the backend for [CostlyAI](https://www.github.com/lmartincek/CostlyAI-we
 - TypeScript
 - Supabase
 - OpenAI API
-## Authors
 
+## Authors
 - [@lmartincek](https://www.github.com/lmartincek)
 
