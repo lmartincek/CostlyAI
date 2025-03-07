@@ -2,6 +2,7 @@ import {NextFunction, Request, Response} from "express";
 import {returnError} from "../utils/responseErrorHandler";
 import {addProducts, fetchCities, fetchCountries, fetchProducts} from "../services/generalService";
 import {FailedResponse} from "../types/responseStatus";
+import {Product, ProductAIResponse} from "../types/products";
 
 export const getCountries = async (req: Request, res: Response, next: NextFunction) => {
     const countries = await fetchCountries()
