@@ -6,7 +6,21 @@ import {returnError} from "../utils/responseErrorHandler";
 import { Response } from "express";
 import {ProductAIResponse} from "../types/products";
 
-export const fetchChatCompletion = async (message: string): Promise<ProductAIResponse[] | FailedResponse> => {
+export const fetchChatCompletion = async (countryName: string, cityName?: string): Promise<ProductAIResponse[] | FailedResponse> => {
+    const message = `create only JSON, no text outside of JSON format, of 24 items in total.
+    10 commonly bought groceries with units (pc, kg, L),
+    8 commonly used services, meal in restaurant, pint of beer, gym membership
+    6 others such as transportation (with km range) or other available data
+    in ${cityName ? countryName + ', ' + cityName : countryName}.
+    JSON format should be
+    [
+        {
+            "name": string in english,
+            "price": number in USD (up to date conversion rate if possible),
+            "category": string as "groceries" | "services" | "others",
+        }
+    ]`;
+
     try {
         const response: AxiosResponse<OpenAIResponse> = await axios.post<OpenAIResponse>(
             process.env.CHAT_COMPLETION_URL as string,
