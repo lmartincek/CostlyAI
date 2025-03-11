@@ -8,7 +8,7 @@ import {ProductAIResponse} from "../types/products";
 
 export const fetchChatCompletion = async (countryName: string, cityName?: string): Promise<ProductAIResponse[] | FailedResponse> => {
     const message = `create only JSON, no text outside of JSON format, of 24 items in total.
-    10 commonly bought groceries with units (pc, kg, L),
+    10 commonly bought groceries always with units (pieces, weight or capacity),
     8 commonly used services, meal in restaurant, pint of beer, gym membership
     6 others such as transportation (with km range) or other available data
     in ${cityName ? countryName + ', ' + cityName : countryName}.
