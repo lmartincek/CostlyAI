@@ -18,11 +18,13 @@ export const getCountries = async (req: Request, res: Response, next: NextFuncti
 export const getCities = async (req: Request, res: Response) => {
     const { countryId } = req.query;
 
-    if (!countryId) {
+    const parsedCountryId = countryId ? Number(countryId) : null
+
+    if (!parsedCountryId) {
         return res.status(400).json(returnError('countryId is required', 400));
     }
 
-    const cities = await fetchCities(Number(countryId))
+    const cities = await fetchCities(parsedCountryId)
     if ('error' in cities) {
         const { error, statusCode } = cities as FailedResponse;
         return res.status(statusCode ?? 500).json(returnError(error, statusCode));
@@ -32,13 +34,17 @@ export const getCities = async (req: Request, res: Response) => {
 }
 
 export const getProducts = async (req: Request, res: Response) => {
-    const { countryId, cityId } = req.query;
+    const { countryId, cityId, limit } = req.query;
 
-    if (!countryId) {
-        return res.status(400).json(returnError('countryId is required', 400));
+    if (!countryId && !limit) {
+        return res.status(400).json(returnError('Either countryId or limit is required', 400));
     }
 
-    const products = await fetchProducts(Number(countryId), cityId ? Number(cityId) : null);
+    const parsedCountryId = countryId ? Number(countryId) : null;
+    const parsedCityId = cityId ? Number(cityId) : null;
+    const parsedLimit = limit ? Number(limit) : null;
+
+    const products = await fetchProducts(parsedCountryId, parsedCityId, parsedLimit);
 
     if ('error' in products) {
         const { error, statusCode } = products as FailedResponse;
