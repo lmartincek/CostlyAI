@@ -40,21 +40,29 @@ export const fetchCities = async (countryId: number): Promise<City[] | FailedRes
 }
 
 export const fetchProducts = async (
-    countryId: number,
-    cityId: number | null
+    countryId: number | null,
+    cityId: number | null,
+    limit: number | null = null
 ): Promise<Product[] | FailedResponse> => {
+    //TODO - with limit not getting products where city_id is set
     try {
         const query = supabase
             .from('products')
             .select('*')
-            .eq('country_id', countryId);
+            .order('created_at', { ascending: false });
+
+        if (countryId !== null) {
+            query.eq('country_id', countryId);
+        }
 
         if (cityId) {
             query.eq('city_id', cityId);
+        } else if (cityId === null) {
+            query.is('city_id', null);
         }
 
-        if (cityId === null) {
-            query.is('city_id', null)
+        if (limit !== null) {
+            query.limit(limit);
         }
 
         const { data, error } = await query;
