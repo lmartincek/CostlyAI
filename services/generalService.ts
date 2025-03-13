@@ -10,7 +10,12 @@ export const fetchCountries = async (): Promise<Country[] | FailedResponse> => {
         const { data, error } = await supabase
             .from('countries')
             .select('*')
+            .order('name')
 
+        // TODO
+        //  - add search query
+        //  - sort by alphabet
+        //  - add pagination
         if (error) {
             return returnError(`Failed to fetch countries: ${error.message}`, 400)
         }
@@ -21,23 +26,23 @@ export const fetchCountries = async (): Promise<Country[] | FailedResponse> => {
     }
 }
 
-export const fetchCities = async (countryId: number): Promise<City[] | FailedResponse> => {
+export const fetchCities = async (countryIds: number[]): Promise<City[] | FailedResponse> => {
     try {
         const { data, error } = await supabase
             .from('cities')
             .select('*')
-            .eq('country_id', countryId)
+            .in('country_id', countryIds)
+            .order('name')
 
         if (error) {
-            return returnError(`Failed to fetch cities: ${error.message}`, 400)
+            return returnError(`Failed to fetch cities: ${error.message}`, 400);
         }
 
-        return data
+        return data;
     } catch (error: any) {
         return returnError(`Unexpected error in fetchCities: ${error.message}`);
     }
-
-}
+};
 
 export const fetchProducts = async (
     countryId: number | null,
