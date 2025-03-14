@@ -24,9 +24,9 @@ router.post('/products', saveProducts);
 // @ts-ignore
 router.post('/logout', logout)
 // @ts-ignore
-router.post('/loginWithCredentials', loginWithCredentials)
+router.post('/login-with-credentials', loginWithCredentials)
 // @ts-ignore
-router.post('/loginWithProvider', loginWithProvider)
+router.post('/login-with-provider', loginWithProvider)
 // @ts-ignore
 router.post('/register', register)
 
