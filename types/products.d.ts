@@ -1,12 +1,9 @@
-enum ProductCategory {
-    GROCERIES = "groceries",
-    SERVICES = "services",
-    OTHERS = "others",
-}
+declare type ProductCategoryType = "groceries" | "services" | "others";
+
 export interface ProductAIResponse {
     name: string,
     price: number,
-    category: [ProductCategory.GROCERIES] | [ProductCategory.SERVICES] | [ProductCategory.OTHERS],
+    category: ProductCategoryType,
 }
 
 export interface Product extends ProductAIResponse {

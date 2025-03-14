@@ -7,14 +7,17 @@ export const registerUser = async (email: string, password: string) => {
         const { data, error } = await supabase.auth.signUp({
             email,
             password,
-        })
+        });
 
-        if (error) return returnError(`Failed to register user with credentials: ${error.message}`, 400);
-        return data
+        if (error) {
+            return returnError(`Failed to register user: ${error.message}`, 400);
+        }
+
+        return data;
     } catch (error: any) {
         return returnError(`Unexpected error in registerUser: ${error.message}`);
     }
-}
+};
 
 export const loginUserWithCredentials = async (email: string, password: string) => {
     try {
@@ -34,14 +37,17 @@ export const loginUserWithProvider = async (provider: Providers) => {
     try {
         const { data, error } = await supabase.auth.signInWithOAuth({
             provider,
-        })
+            options: {
+                redirectTo: `${process.env.FRONTEND_URL}/auth/callback`,
+            },
+        });
 
         if (error) return returnError(`Failed to login with ${provider}: ${error.message}`, 400);
-        return data
+        return { url: data.url };
     } catch (error: any) {
         return returnError(`Unexpected error in loginWithProvider: ${error.message}`);
     }
-}
+};
 
 export const logoutUser = async () => {
     try {
