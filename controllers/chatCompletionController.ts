@@ -5,13 +5,13 @@ import {returnError} from "../utils/responseErrorHandler";
 import {ProductAIResponse} from "../types/products";
 
 export const getChatResponse = async (req: Request, res: Response) => {
-    const { countryName, cityName } = req.body;
+    const { countryName, cityName, selectedCategories } = req.body;
 
     if (!countryName) {
         return res.status(400).json(returnError('Country is missing in the request'));
     }
 
-    const aiProducts: ProductAIResponse[] | FailedResponse = await fetchChatCompletion(countryName, cityName);
+    const aiProducts: ProductAIResponse[] | FailedResponse = await fetchChatCompletion(countryName, cityName, selectedCategories);
     if ('error' in aiProducts) {
         const { error, statusCode } = aiProducts;
         return res.status(statusCode ?? 500).json(returnError(`Failed to get response from openAI controller: ${error}`));
