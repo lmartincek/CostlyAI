@@ -1,4 +1,6 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
+const cookieParser = require('cookie-parser')
+
 import dotenv from 'dotenv';
 // @ts-ignore
 import cors from 'cors';
@@ -7,6 +9,8 @@ import apiRoutes from './routes/apiRoutes';
 dotenv.config({ path: `.env.${process.env.NODE_ENV}`})
 
 const app = express();
+
+app.use(cookieParser());
 
 const allowedOrigins = [
     'https://costlyai-webclient.onrender.com',

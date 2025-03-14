@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import {getChatResponse, getChatStreamResponse} from '../controllers/chatCompletionController';
 import {getCountries, getProducts, getCities, saveProducts} from "../controllers/generalController"
-import {loginWithProvider, logout, loginWithCredentials, register} from "../controllers/authController";
+import {loginWithProvider, logout, loginWithCredentials, register, refreshToken} from "../controllers/authController";
 
 const router = Router();
 
@@ -29,4 +29,7 @@ router.post('/loginWithCredentials', loginWithCredentials)
 router.post('/loginWithProvider', loginWithProvider)
 // @ts-ignore
 router.post('/register', register)
+
+// @ts-ignore
+router.get('/refresh-token', refreshToken)
 export default router;
