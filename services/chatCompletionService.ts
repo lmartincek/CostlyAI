@@ -6,20 +6,19 @@ import {returnError} from "../utils/responseErrorHandler";
 import { Response } from "express";
 import {ProductAIResponse} from "../types/products";
 
-export const fetchChatCompletion = async (countryName: string, cityName?: string): Promise<ProductAIResponse[] | FailedResponse> => {
-    const message = `create only JSON, no text outside of JSON format, of 24 items in total.
+export const fetchChatCompletion = async (countryName: string, cityName?: string, selectedCategories?: string[]): Promise<ProductAIResponse[] | FailedResponse> => {
+    const format = (categories = '"groceries" | "services" | "others"') => `[{"name": string in english,"price": number in USD (up to date conversion rate if possible),"category": string as ${categories},}]`
+
+    const message = selectedCategories && selectedCategories.length
+        ? `create only JSON, no text outside of JSON format, of 24 items in total. I want
+    to know prices in ${cityName ? countryName + ', ' + cityName : countryName} within this categories:
+    ${selectedCategories.join(', ')}. JSON format should look like ${format(selectedCategories.join('| '))}`
+        : `create only JSON, no text outside of JSON format, of 24 items in total.
     10 commonly bought groceries always with units (pieces, weight or capacity),
     8 commonly used services, meal in restaurant, pint of beer, gym membership
     6 others such as transportation (with km range) or other available data
     in ${cityName ? countryName + ', ' + cityName : countryName}.
-    JSON format should be
-    [
-        {
-            "name": string in english,
-            "price": number in USD (up to date conversion rate if possible),
-            "category": string as "groceries" | "services" | "others",
-        }
-    ]`;
+    JSON format should be ${format}`
 
     try {
         const response: AxiosResponse<OpenAIResponse> = await axios.post<OpenAIResponse>(
