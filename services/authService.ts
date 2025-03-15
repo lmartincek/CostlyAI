@@ -38,7 +38,7 @@ export const signInWithOAuth = async (provider: Providers) => {
         const { data, error } = await supabase.auth.signInWithOAuth({
             provider,
             options: {
-                redirectTo: `${process.env.FRONTEND_URL}/auth/callback`,
+                redirectTo: `${process.env.FRONTEND_URL}`,
             },
         });
 
