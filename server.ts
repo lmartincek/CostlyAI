@@ -11,6 +11,8 @@ const app = express();
 
 const allowedOrigins = [
     'https://costlyai-webclient.onrender.com',
+    'https://costlyai.xyz',
+    'https://costlyai.xyz/',
     'http://localhost:4173',
     'http://localhost:5173',
 ];
