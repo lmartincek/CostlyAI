@@ -2,7 +2,7 @@ import {returnError} from "../utils/responseErrorHandler";
 import {supabase} from "../utils/supabaseClient";
 import {Providers} from "../types/auth";
 
-export const registerUser = async (email: string, password: string) => {
+export const signUp = async (email: string, password: string) => {
     try {
         const { data, error } = await supabase.auth.signUp({
             email,
@@ -10,7 +10,7 @@ export const registerUser = async (email: string, password: string) => {
         });
 
         if (error) {
-            return returnError(`Failed to register user: ${error.message}`, 400);
+            return returnError(`Failed to register user: ${error.message}`, error.status);
         }
 
         return data;
@@ -19,21 +19,21 @@ export const registerUser = async (email: string, password: string) => {
     }
 };
 
-export const loginUserWithCredentials = async (email: string, password: string) => {
+export const signInWithPassword = async (email: string, password: string) => {
     try {
         const { data, error } = await supabase.auth.signInWithPassword({
             email,
             password,
         })
 
-        if (error) return returnError(`Failed to login with credentials: ${error.message}`, 400);
+        if (error) return returnError(`Failed to login with credentials: ${error.message}`, error.status);
         return data
     } catch (error: any) {
         return returnError(`Unexpected error in loginUser: ${error.message}`);
     }
 }
 
-export const loginUserWithProvider = async (provider: Providers) => {
+export const signInWithOAuth = async (provider: Providers) => {
     try {
         const { data, error } = await supabase.auth.signInWithOAuth({
             provider,
@@ -42,20 +42,56 @@ export const loginUserWithProvider = async (provider: Providers) => {
             },
         });
 
-        if (error) return returnError(`Failed to login with ${provider}: ${error.message}`, 400);
+        if (error) return returnError(`Failed to login with ${provider}: ${error.message}`, error.status);
         return { url: data.url };
     } catch (error: any) {
         return returnError(`Unexpected error in loginWithProvider: ${error.message}`);
     }
 };
 
-export const logoutUser = async () => {
+export const refreshSession = async (refreshToken: string) => {
     try {
-        const { error } = await supabase.auth.signOut()
+        const { data, error } = await supabase.auth.refreshSession({
+            refresh_token: refreshToken
+        });
 
-        if (error) return returnError(`Failed to logout: ${error.message}`, 400);
-        return { message: 'Successfully logged out!' }
+        if (error) {
+            return returnError(`Invalid refresh token: ${error.message}`, error.status);
+        }
+
+        return data;
     } catch (error: any) {
-        return returnError(`Unexpected error in logoutUser: ${error.message}`);
+        return returnError(`Unexpected error in refreshSession: ${error.message}`);
+    }
+}
+
+export const setSession = async (accessToken: string, refreshToken: string) => {
+    try {
+        const { data, error } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+        });
+
+        if (error) {
+            return returnError(`Invalid refresh token: ${error.message}`, error.status);
+        }
+
+        return data;
+    } catch (error: any) {
+        return returnError(`Unexpected error in refreshSession: ${error.message}`);
+    }
+}
+
+export const getUser = async (accessToken: string) => {
+    try {
+        const { data, error } = await supabase.auth.getUser(accessToken);
+
+        if (error) {
+            return returnError(`Invalid session: ${error.message}`, error.status);
+        }
+
+        return data;
+    } catch (error: any) {
+        return returnError(`Unexpected error in refreshSession: ${error.message}`);
     }
 }
