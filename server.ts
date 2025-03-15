@@ -2,7 +2,6 @@ import express from 'express';
 const cookieParser = require('cookie-parser')
 
 import dotenv from 'dotenv';
-// @ts-ignore
 import cors from 'cors';
 import apiRoutes from './routes/apiRoutes';
 
@@ -10,15 +9,12 @@ dotenv.config({ path: `.env.${process.env.NODE_ENV}`})
 
 const app = express();
 
-app.use(cookieParser());
-
 const allowedOrigins = [
     'https://costlyai-webclient.onrender.com',
     'http://localhost:4173',
     'http://localhost:5173',
 ];
 
-// Enable CORS
 app.use(
     cors({
         origin: (origin, callback) => {
@@ -33,13 +29,10 @@ app.use(
     })
 );
 
-// Middleware
+app.use(cookieParser());
 app.use(express.json());
-
-// Use API routes
 app.use('/api', apiRoutes);
 
-// Start the server
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {

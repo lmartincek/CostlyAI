@@ -1,7 +1,14 @@
 import { Router } from 'express';
 import {getChatResponse, getChatStreamResponse} from '../controllers/chatCompletionController';
 import {getCountries, getProducts, getCities, saveProducts} from "../controllers/generalController"
-import {loginWithProvider, logout, loginWithCredentials, register, refreshToken} from "../controllers/authController";
+import {
+    loginWithProvider,
+    logout,
+    loginWithCredentials,
+    register,
+    refreshToken,
+    getUserSession, setUserSession
+} from "../controllers/authController";
 
 const router = Router();
 
@@ -22,14 +29,18 @@ router.get('/cities', getCities);
 router.post('/products', saveProducts);
 
 // @ts-ignore
-router.post('/logout', logout)
-// @ts-ignore
 router.post('/login-with-credentials', loginWithCredentials)
 // @ts-ignore
 router.post('/login-with-provider', loginWithProvider)
 // @ts-ignore
 router.post('/register', register)
+// @ts-ignore
+router.post('/logout', logout)
 
 // @ts-ignore
 router.get('/refresh-token', refreshToken)
+// @ts-ignore
+router.get('/get-user', getUserSession)
+// @ts-ignore
+router.post('/set-user', setUserSession)
 export default router;
