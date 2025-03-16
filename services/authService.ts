@@ -95,3 +95,19 @@ export const getUser = async (accessToken: string) => {
         return returnError(`Unexpected error in refreshSession: ${error.message}`);
     }
 }
+
+export const resetPasswordForEmail = async (email: string) => {
+    try {
+        const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: `${process.env.FRONTEND_URL}`
+        })
+
+        if (error) {
+            return returnError(`Invalid email: ${error.message}`, error.status);
+        }
+
+        return data;
+    } catch (error: any) {
+        return returnError(`Unexpected error in resetPasswordForEmail: ${error.message}`);
+    }
+}
