@@ -8,6 +8,7 @@ import {
     refreshSession,
     getUser,
     setSession,
+    resetPasswordForEmail,
 } from "../services/authService";
 
 const setAuthCookies = (res: Response, session: { access_token: string; refresh_token?: string }) => {
@@ -83,6 +84,21 @@ export const loginWithProvider = async (req: Request, res: Response) => {
     if (!provider) return res.status(400).json(returnError('Provider is required', 400));
 
     const response = await signInWithOAuth(provider);
+
+    if ('error' in response) {
+        const { error, statusCode } = response as FailedResponse;
+        return res.status(statusCode ?? 500).json(returnError(error, statusCode));
+    }
+
+    return res.status(200).json(response);
+};
+
+export const resetPassword = async (req: Request, res: Response) => {
+    const { email } = req.body;
+
+    if (!email) return res.status(400).json(returnError('Email is required', 400));
+
+    const response = await resetPasswordForEmail(email);
 
     if ('error' in response) {
         const { error, statusCode } = response as FailedResponse;

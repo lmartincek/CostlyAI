@@ -7,7 +7,9 @@ import {
     loginWithCredentials,
     register,
     refreshToken,
-    getUserSession, setUserSession
+    getUserSession,
+    setUserSession,
+    resetPassword
 } from "../controllers/authController";
 
 const router = Router();
@@ -43,4 +45,6 @@ router.get('/refresh-token', refreshToken)
 router.get('/get-user', getUserSession)
 // @ts-ignore
 router.post('/set-user', setUserSession)
+// @ts-ignore
+router.post('/reset-password', resetPassword)
 export default router;
