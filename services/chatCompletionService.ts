@@ -7,7 +7,7 @@ import {ProductAIResponse} from "../types/products";
 
 export const fetchChatCompletion = async (countryName: string, cityName?: string, selectedCategories?: string[]): Promise<ProductAIResponse[] | FailedResponse> => {
     const format = (categories = '"groceries" | "services" | "others"') => `[{"name": string in english,"price": number in USD (up to date conversion rate if possible),"category": string as ${categories}}]`
-    const instructions = `You are an assistant that shows costs of living list in desired JSON object. The desired output is only JSON, no text outside of JSON - as ${selectedCategories ? format(selectedCategories.join(' | ')) : format()}. If you can't find proper data, output only something you can.`
+    const instructions = `You are an assistant that shows costs of living list in desired JSON object. The desired output is only JSON, no text outside of JSON - as ${selectedCategories ? format(selectedCategories.join(' | ')) : format()}. If you can't find proper data, output only few items you can in a format I provided you.`
     const message = selectedCategories && selectedCategories.length
         ? `I want to know prices in ${cityName ? countryName + ', ' + cityName : countryName} within this categories: ${selectedCategories.join(', ')}.`
         : `Show me 24 items in total, most commonly bought groceries, 8 most used services, meal in restaurant, pint of beer, gym membership. 6 others such as transportation (with km range) or other available data in ${cityName ? countryName + ', ' + cityName : countryName}.`
