@@ -13,6 +13,9 @@ export const signUp = async (email: string, password: string) => {
             return returnError(`Failed to register user: ${error.message}`, error.status);
         }
 
+        // supabase is not handling this automatically
+        if (!data.user?.identities?.length) return returnError(`This email is already in use.`, 409)
+
         return data;
     } catch (error: any) {
         return returnError(`Unexpected error in registerUser: ${error.message}`);
