@@ -1,62 +1,57 @@
-import { Router } from 'express';
+import { Router } from 'express'
+import { getChatResponse, getChatStreamResponse } from '../controllers/chatCompletionController'
 import {
-    getChatResponse,
-    getChatStreamResponse
-} from '../controllers/chatCompletionController';
+  getCountries,
+  getCities,
+  getRecentlySearchedPlaces,
+  saveUserSearch,
+  getUserSearch,
+} from '../controllers/generalController'
 import {
-    getCountries,
-    getCities,
-    getRecentlySearchedPlaces,
-    saveUserSearch, 
-    getUserSearch
-} from "../controllers/generalController"
+  loginWithProvider,
+  logout,
+  loginWithCredentials,
+  register,
+  refreshToken,
+  getUserSession,
+  setUserSession,
+  resetPassword,
+} from '../controllers/authController'
 import {
-    loginWithProvider,
-    logout,
-    loginWithCredentials,
-    register,
-    refreshToken,
-    getUserSession,
-    setUserSession,
-    resetPassword
-} from "../controllers/authController";
-import { 
-    getProducts,
-    getUserProducts,
-    saveProducts,
-    saveUserProducts
-} from '../controllers/productController';
+  getProducts,
+  getUserProducts,
+  saveProducts,
+  saveUserProducts,
+} from '../controllers/productController'
 
-const router = Router();
+const router = Router()
 
 //TODO fix the typing problem
 // @ts-ignore
-router.post('/chat', getChatResponse);
+router.post('/chat', getChatResponse)
 // @ts-ignore
-router.post('/chatStream', getChatStreamResponse);
+router.post('/chatStream', getChatStreamResponse)
 
 // @ts-ignore
-router.get('/products', getProducts);
+router.get('/products', getProducts)
 // @ts-ignore
-router.post('/products', saveProducts);
+router.post('/products', saveProducts)
 // @ts-ignore
-router.get('/products/user', getUserProducts);
+router.get('/products/user', getUserProducts)
 // @ts-ignore
-router.post('/products/user', saveUserProducts);
+router.post('/products/user', saveUserProducts)
 
 // @ts-ignore
-router.get('/countries', getCountries);
+router.get('/countries', getCountries)
 // @ts-ignore
-router.get('/cities', getCities);
+router.get('/cities', getCities)
 
 // @ts-ignore
-router.get('/recently-searched-places', getRecentlySearchedPlaces);
+router.get('/recently-searched-places', getRecentlySearchedPlaces)
 // @ts-ignore
-router.post('/recently-searched-places/user', saveUserSearch);
+router.post('/recently-searched-places/user', saveUserSearch)
 // @ts-ignore
-router.get('/recently-searched-places/user', getUserSearch);
-
-
+router.get('/recently-searched-places/user', getUserSearch)
 
 // @ts-ignore
 router.post('/login-with-credentials', loginWithCredentials)
@@ -75,4 +70,4 @@ router.get('/get-user', getUserSession)
 router.post('/set-user', setUserSession)
 // @ts-ignore
 router.post('/reset-password', resetPassword)
-export default router;
+export default router
