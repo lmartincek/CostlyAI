@@ -1,92 +1,116 @@
-import {NextFunction, Request, Response} from "express";
-import {returnError} from "../utils/responseErrorHandler";
-import {addProducts, fetchCities, fetchCountries, fetchProducts} from "../services/generalService";
-import {FailedResponse} from "../types/responseStatus";
-import {Product, ProductAIResponse} from "../types/products";
+import { Request, Response } from 'express'
+import { returnError } from '../utils/responseErrorHandler'
+import {
+  addUserSearch,
+  fetchCities,
+  fetchCountries,
+  fetchRecentlySearchedPlaces,
+  fetchUserSearch,
+} from '../services/generalService'
+import { FailedResponse } from '../types/responseStatus'
+import { UserSearchPayload } from '../types/general'
 
-export const getCountries = async (req: Request, res: Response, next: NextFunction) => {
-    const countries = await fetchCountries()
+export const getCountries = async (req: Request, res: Response) => {
+  const countries = await fetchCountries()
 
-    if ('error' in countries) {
-        const { error, statusCode } = countries as FailedResponse;
-        return res.status(statusCode ?? 500).json(returnError(error, statusCode));
-    }
+  if ('error' in countries) {
+    const { error, statusCode } = countries as FailedResponse
+    return res.status(statusCode ?? 500).json(returnError(error, statusCode))
+  }
 
-    return res.status(200).json(countries)
+  return res.status(200).json(countries)
 }
 
 export const getCities = async (req: Request, res: Response) => {
-    const { countryIds } = req.query;
+  const { countryIds } = req.query
 
-    if (!countryIds) {
-        return res.status(400).json(returnError('countryIds is required', 400));
-    }
+  if (!countryIds) {
+    return res.status(400).json(returnError('countryIds is required', 400))
+  }
 
-    // Convert the comma-separated string into an array of numbers
-    const countryIdsArray = String(countryIds)
-        .split(',')
-        .map(id => parseInt(id.trim()))
-        .filter(id => !isNaN(id))
+  // Convert the comma-separated string into an array of numbers
+  const countryIdsArray = String(countryIds)
+    .split(',')
+    .map((id) => parseInt(id.trim()))
+    .filter((id) => !isNaN(id))
 
-    if (countryIdsArray.length === 0) {
-        return res.status(400).json(returnError('Invalid countryIds provided', 400));
-    }
+  if (countryIdsArray.length === 0) {
+    return res.status(400).json(returnError('Invalid countryIds provided', 400))
+  }
 
-    const cities = await fetchCities(countryIdsArray);
-    if ('error' in cities) {
-        const { error, statusCode } = cities as FailedResponse;
-        return res.status(statusCode ?? 500).json(returnError(error, statusCode));
-    }
+  const cities = await fetchCities(countryIdsArray)
+  if ('error' in cities) {
+    const { error, statusCode } = cities as FailedResponse
+    return res.status(statusCode ?? 500).json(returnError(error, statusCode))
+  }
 
-    return res.status(200).json(cities);
-};
+  return res.status(200).json(cities)
+}
 
-export const getProducts = async (req: Request, res: Response) => {
-    const { countryId, cityId, limit } = req.query;
+export const getRecentlySearchedPlaces = async (req: Request, res: Response) => {
+  const { places } = req.query
 
-    if (!countryId && !limit) {
-        return res.status(400).json(returnError('Either countryId or limit is required', 400));
-    }
+  let placesResponse
+  if (places) {
+    placesResponse = await fetchRecentlySearchedPlaces(Number(places))
+  } else {
+    placesResponse = await fetchRecentlySearchedPlaces()
+  }
 
-    const parsedCountryId = countryId ? Number(countryId) : null;
-    const parsedCityId = cityId ? Number(cityId) : null;
-    const parsedLimit = limit ? Number(limit) : null;
+  if ('error' in placesResponse) {
+    const { error, statusCode } = placesResponse as FailedResponse
+    return res.status(statusCode ?? 500).json(returnError(error, statusCode))
+  }
 
-    const products = await fetchProducts(parsedCountryId, parsedCityId, parsedLimit);
+  return res.status(200).json(placesResponse)
+}
 
-    if ('error' in products) {
-        const { error, statusCode } = products as FailedResponse;
-        return res.status(statusCode ?? 500).json(returnError(error, statusCode));
-    }
+export const saveUserSearch = async (req: Request, res: Response) => {
+  const { userId, countryId, cityId, categories } = req.body
 
-    return res.status(200).json(products);
-};
+  if (!userId) {
+    return res.status(400).json(returnError('Missing required userId', 400))
+  }
 
-export const saveProducts = async (req: Request, res: Response) => {
-    const { countryId, cityId, products } = req.body
+  if (!countryId || !categories) {
+    return res
+      .status(400)
+      .json(
+        returnError(
+          `Missing required fields countryId: ${countryId}, cityId: ${cityId}, categories: ${categories}`,
+          400,
+        ),
+      )
+  }
 
-    const invalidProduct = products.find(
-        (product: ProductAIResponse) => !product.name || !product.price || !product.category
-    );
-    if (invalidProduct) {
-        return res.status(400).json(returnError('Missing required fields in one or more products', 400));
-    }
+  const data = await addUserSearch({ userId, categories, countryId, cityId } as UserSearchPayload)
 
-    const mappedProducts = products.map((product: ProductAIResponse): Product => {
-        return {
-            ...product,
-            country_id: countryId,
-            city_id: cityId ?? null
-        };
-    })
+  if (data && 'error' in data) {
+    const { error, statusCode } = data as FailedResponse
+    return res.status(statusCode ?? 500).json(returnError(error, statusCode))
+  }
 
-    const message = await addProducts(mappedProducts);
+  return res.status(201).json({ message: 'User search successfully!', data })
+}
 
-    if (message && 'error' in message) {
-        const { error, statusCode } = message as FailedResponse;
-        return res.status(statusCode ?? 500).json(returnError(error, statusCode));
-    }
+export const getUserSearch = async (req: Request, res: Response) => {
+  const { userId, places } = req.query
 
-    //TODO - when supabase accepts data it returns null, thus the message is null = rewrite later
-    return res.status(201).json({ message: "Products saved successfully!" });
-};
+  if (!userId) {
+    return res.status(400).json(returnError('Missing required userId', 400))
+  }
+
+  let placesResponse
+  if (places) {
+    placesResponse = await fetchUserSearch(String(userId), Number(places))
+  } else {
+    placesResponse = await fetchUserSearch(String(userId))
+  }
+
+  if ('error' in placesResponse) {
+    const { error, statusCode } = placesResponse as FailedResponse
+    return res.status(statusCode ?? 500).json(returnError(error, statusCode))
+  }
+
+  return res.status(200).json(placesResponse)
+}
