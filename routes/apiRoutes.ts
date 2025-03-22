@@ -1,6 +1,15 @@
 import { Router } from 'express';
-import {getChatResponse, getChatStreamResponse} from '../controllers/chatCompletionController';
-import {getCountries, getProducts, getCities, saveProducts} from "../controllers/generalController"
+import {
+    getChatResponse,
+    getChatStreamResponse
+} from '../controllers/chatCompletionController';
+import {
+    getCountries,
+    getCities,
+    getRecentlySearchedPlaces,
+    saveUserSearch, 
+    getUserSearch
+} from "../controllers/generalController"
 import {
     loginWithProvider,
     logout,
@@ -11,6 +20,12 @@ import {
     setUserSession,
     resetPassword
 } from "../controllers/authController";
+import { 
+    getProducts,
+    getUserProducts,
+    saveProducts,
+    saveUserProducts
+} from '../controllers/productController';
 
 const router = Router();
 
@@ -23,12 +38,25 @@ router.post('/chatStream', getChatStreamResponse);
 // @ts-ignore
 router.get('/products', getProducts);
 // @ts-ignore
+router.post('/products', saveProducts);
+// @ts-ignore
+router.get('/products/user', getUserProducts);
+// @ts-ignore
+router.post('/products/user', saveUserProducts);
+
+// @ts-ignore
 router.get('/countries', getCountries);
 // @ts-ignore
 router.get('/cities', getCities);
 
 // @ts-ignore
-router.post('/products', saveProducts);
+router.get('/recently-searched-places', getRecentlySearchedPlaces);
+// @ts-ignore
+router.post('/recently-searched-places/user', saveUserSearch);
+// @ts-ignore
+router.get('/recently-searched-places/user', getUserSearch);
+
+
 
 // @ts-ignore
 router.post('/login-with-credentials', loginWithCredentials)

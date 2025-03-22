@@ -1,10 +1,10 @@
-import {NextFunction, Request, Response} from "express";
+import {Request, Response} from "express";
 import {returnError} from "../utils/responseErrorHandler";
-import {addProducts, fetchCities, fetchCountries, fetchProducts} from "../services/generalService";
+import { addUserSearch, fetchCities, fetchCountries, fetchRecentlySearchedPlaces, fetchUserSearch} from "../services/generalService";
 import {FailedResponse} from "../types/responseStatus";
-import {Product, ProductAIResponse} from "../types/products";
+import { UserSearchPayload } from "../types/general";
 
-export const getCountries = async (req: Request, res: Response, next: NextFunction) => {
+export const getCountries = async (req: Request, res: Response) => {
     const countries = await fetchCountries()
 
     if ('error' in countries) {
@@ -41,52 +41,63 @@ export const getCities = async (req: Request, res: Response) => {
     return res.status(200).json(cities);
 };
 
-export const getProducts = async (req: Request, res: Response) => {
-    const { countryId, cityId, limit } = req.query;
+export const getRecentlySearchedPlaces = async (req: Request, res: Response) => {
+    const { places } = req.query;
 
-    if (!countryId && !limit) {
-        return res.status(400).json(returnError('Either countryId or limit is required', 400));
+    let placesResponse;
+    if (places) {
+        placesResponse = await fetchRecentlySearchedPlaces(Number(places))
+    } else {
+        placesResponse = await fetchRecentlySearchedPlaces();
     }
 
-    const parsedCountryId = countryId ? Number(countryId) : null;
-    const parsedCityId = cityId ? Number(cityId) : null;
-    const parsedLimit = limit ? Number(limit) : null;
-
-    const products = await fetchProducts(parsedCountryId, parsedCityId, parsedLimit);
-
-    if ('error' in products) {
-        const { error, statusCode } = products as FailedResponse;
+    if ('error' in placesResponse) {
+        const { error, statusCode } = placesResponse as FailedResponse;
         return res.status(statusCode ?? 500).json(returnError(error, statusCode));
     }
 
-    return res.status(200).json(products);
+    return res.status(200).json(placesResponse);
 };
 
-export const saveProducts = async (req: Request, res: Response) => {
-    const { countryId, cityId, products } = req.body
+export const saveUserSearch = async (req: Request, res: Response) => {
+    const { userId, countryId, cityId, categories } = req.body
 
-    const invalidProduct = products.find(
-        (product: ProductAIResponse) => !product.name || !product.price || !product.category
-    );
-    if (invalidProduct) {
-        return res.status(400).json(returnError('Missing required fields in one or more products', 400));
+    if (!userId) {
+        return res.status(400).json(returnError('Missing required userId', 400));
     }
 
-    const mappedProducts = products.map((product: ProductAIResponse): Product => {
-        return {
-            ...product,
-            country_id: countryId,
-            city_id: cityId ?? null
-        };
-    })
+    if (!countryId || !categories) {
+        return res.status(400).json(returnError(`Missing required fields countryId: ${countryId}, cityId: ${cityId}, categories: ${categories}`, 400));
+    }
 
-    const message = await addProducts(mappedProducts);
+    const data = await addUserSearch({userId, categories, countryId, cityId} as UserSearchPayload);
 
-    if (message && 'error' in message) {
-        const { error, statusCode } = message as FailedResponse;
+    if (data && 'error' in data) {
+        const { error, statusCode } = data as FailedResponse;
         return res.status(statusCode ?? 500).json(returnError(error, statusCode));
     }
 
-    //TODO - when supabase accepts data it returns null, thus the message is null = rewrite later
-    return res.status(201).json({ message: "Products saved successfully!" });
+    return res.status(201).json({ message: "User search successfully!", data });
+};
+
+export const getUserSearch = async (req: Request, res: Response) => {
+    const { userId, places } = req.query;
+
+    if (!userId) {
+        return res.status(400).json(returnError('Missing required userId', 400));
+    }
+
+    let placesResponse;
+    if (places) {
+        placesResponse = await fetchUserSearch(String(userId), Number(places))
+    } else {
+        placesResponse = await fetchUserSearch(String(userId));
+    }
+
+    if ('error' in placesResponse) {
+        const { error, statusCode } = placesResponse as FailedResponse;
+        return res.status(statusCode ?? 500).json(returnError(error, statusCode));
+    }
+
+    return res.status(200).json(placesResponse);
 };

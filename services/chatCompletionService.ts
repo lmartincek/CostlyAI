@@ -30,7 +30,6 @@ export const fetchChatCompletion = async (countryName: string, cityName?: string
             }
         );
 
-        console.info(`${JSON.stringify(response.data.choices)}, in ${countryName}, ${cityName} ${selectedCategories ? selectedCategories.join(', ') : ''}.`)
         return handleOpenAIResponse(response)
     } catch (error: any) {
         return returnError(`Error fetching openAI API response: ${error.message}`)
