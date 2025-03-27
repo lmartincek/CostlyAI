@@ -3,7 +3,9 @@ import { FailedResponse } from '../types/responseStatus'
 import { returnError } from '../utils/responseErrorHandler'
 import { supabase } from '../utils/supabaseClient'
 
-export const fetchCommunities = async (args: CommunityQueries): Promise<Community[] | FailedResponse> => {
+export const fetchCommunities = async (
+  args: CommunityQueries,
+): Promise<Community[] | FailedResponse> => {
   const { country, city, type, members } = args
   try {
     let query = supabase.from('communities').select('*')
