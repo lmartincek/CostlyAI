@@ -23,6 +23,7 @@ import {
   saveProducts,
   saveUserProducts,
 } from '../controllers/productController'
+import { getCommunities } from '../controllers/communitiesController'
 
 const router = Router()
 
@@ -45,6 +46,8 @@ router.post('/products/user', saveUserProducts)
 router.get('/countries', getCountries)
 // @ts-ignore
 router.get('/cities', getCities)
+// @ts-ignore
+router.get('/communities', getCommunities)
 
 // @ts-ignore
 router.get('/recently-searched-places', getRecentlySearchedPlaces)
